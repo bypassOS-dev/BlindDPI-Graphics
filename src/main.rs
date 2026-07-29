@@ -1,11 +1,15 @@
 use futures::executor::block_on;
+use std::time::Duration;
+use futures_timer::Delay;
 
 async fn one() {
     println!("One start");
+    Delay::new(Duration::from_millis(100)).await;
     println!("One end");
 }
 async fn two() {
     println!("Two start");
+    Delay::new(Duration::from_millis(100)).await;
     println!("Two end");
 }
 async fn async_main() {
