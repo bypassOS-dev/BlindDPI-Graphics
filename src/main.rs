@@ -1,11 +1,19 @@
 use futures::executor::block_on;
 
-async fn hello() {
-    println!("Hello");
+async fn one() {
+    println!("One start");
+    println!("One end");
+}
+async fn two() {
+    println!("Two start");
+    println!("Two end");
+}
+async fn async_main() {
+    let one = one();
+    let two = two();
+    futures::join!(one, two);
 }
 fn main() {
-    println!("Start");
-    let future = hello();
-    block_on(future);
-    println!("End");
+    let q = async_main();
+    block_on(q);
 }
