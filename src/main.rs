@@ -27,10 +27,34 @@ impl eframe::App for MyApp{
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.vertical_centered(|ui| {
+                // ======= Header ==========
                 ui.heading(egui::RichText::new("BlindDPI"). size(30.0));
+                // =========================
 
-                ui.add_space(15.0);
+                ui.add_space(75.0);
 
+                // ========== Button ===========
+                let (btn_text, btn_bg_color) = if self.is_running {
+                    ("Stop", egui::Color32::from_rgb(180, 50, 50))
+                } else {
+                    ("Start", egui::Color32::from_rgb(40, 140, 60)) 
+                };
+
+                let rich_btn_text = egui::RichText::new(btn_text)
+                    .size(22.0)
+                    .color(egui::Color32::WHITE);
+                let button = egui::Button::new(rich_btn_text)
+                    .fill(btn_bg_color)
+                    .rounding(60.0);
+
+                if ui.add_sized([120.0, 120.0], button).clicked() {
+                    self.is_running = !self.is_running;
+                }
+                //==============================
+
+                ui.add_space(5.0);
+
+                //======= Status ===========
                 let (status_text, status_color) = if self.is_running {
                     ("BlindDPI is running", egui::Color32::GREEN)
                 } else {
@@ -42,23 +66,7 @@ impl eframe::App for MyApp{
                     .size(20.0)
                     .color(status_color)
                 );
-
-                ui.add_space(5.0);
-
-                let (btn_text, btn_bg_color) = if self.is_running {
-                    ("Stop", egui::Color32::from_rgb(180, 50, 50))
-                } else {
-                    ("Start", egui::Color32::from_rgb(40, 140, 60)) 
-                };
-                
-                let rich_btn_text = egui::RichText::new(btn_text)
-                    .size(22.0)
-                    .color(egui::Color32::WHITE);
-                let button = egui::Button::new(rich_btn_text).fill(btn_bg_color);
-
-                if ui.add_sized([200.0, 50.0], button).clicked() {
-                    self.is_running = !self.is_running;
-                }
+                //===========================
             });
         });
     }
