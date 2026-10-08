@@ -14,15 +14,13 @@ fn main() {
     ).unwrap();
 }
 
-
 struct MyApp{
     is_running: bool,
-    status_text: String
 }
 
 impl Default for MyApp {
     fn default() -> Self {
-        Self { is_running: false, status_text: String::from("BlindDPI isn't working") }
+        Self { is_running: false}
     }
 }
 impl eframe::App for MyApp{
@@ -33,24 +31,35 @@ impl eframe::App for MyApp{
 
                 ui.add_space(15.0);
 
-                if self.is_running {
-                    ui.label(egui::RichText::new("working").size(20.0));
+                let (status_text, status_color) = if self.is_running {
+                    ("BlindDPI is running", egui::Color32::GREEN)
                 } else {
-                    ui.label(egui::RichText::new("don't working").size(20.0));
-                }
+                    ("BlindDPI is stopped", egui::Color32::RED)
+                };
+                
+                ui.label(
+                    egui::RichText::new(status_text)
+                    .size(20.0)
+                    .color(status_color)
+                );
 
                 ui.add_space(5.0);
 
-                let btn_text = if self.is_running {"stop"} else {"start"};
-                let rich_btn_text = egui::RichText::new(btn_text).size(22.0);
+                let (btn_text, btn_bg_color) = if self.is_running {
+                    ("Stop", egui::Color32::from_rgb(180, 50, 50))
+                } else {
+                    ("Start", egui::Color32::from_rgb(40, 140, 60)) 
+                };
+                
+                let rich_btn_text = egui::RichText::new(btn_text)
+                    .size(22.0)
+                    .color(egui::Color32::WHITE);
+                let button = egui::Button::new(rich_btn_text).fill(btn_bg_color);
 
-                let button = egui::Button::new(rich_btn_text);
-
-                if ui.add_sized([240.0, 60.0], button).clicked() {
+                if ui.add_sized([200.0, 50.0], button).clicked() {
                     self.is_running = !self.is_running;
                 }
             });
-            
         });
     }
 }
