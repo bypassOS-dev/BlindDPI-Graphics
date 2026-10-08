@@ -1,6 +1,48 @@
 use eframe::egui;
+use run_blinddpi::run_blind_dpi;
+use kill_blinddpi::kill_blind_dpi;
 
-fn main() {
+mod run_blinddpi;
+mod kill_blinddpi;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>>{
+    //================================================================================================
+    // Checkinf for exist white lists file:
+    let white_lists_path = "whitelist.txt";
+    if !std::path::Path::new(white_lists_path).exists() {
+        let default_domains = "\
+youtube.com
+youtu.be
+googlevideo.com
+ytimg.com
+ggpht.com
+youtubei.googleapis.com
+soundcloud.com
+sndcdn.com
+discord.com
+discord.co
+discordstatus.com
+discordapp.com
+discordapp.net
+discord.media
+discord.gg
+instagram.com
+cdninstagram.com
+facebook.com
+fb.com
+fbcdn.net
+twitter.com
+x.com
+twimg.com
+t.co
+";
+        tokio::fs::write(white_lists_path, default_domains).await?;
+    }
+    //===============================================================================================
+    // TODO! Add support fro change whitelist file
+    //===============================================================================================
+
     let option = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([320.0, 400.0]),
@@ -12,12 +54,15 @@ fn main() {
         option, 
         Box::new(|_cc| Ok(Box::new(MyApp::default())))
     ).unwrap();
+
+    Ok(())
 }
 
 struct MyApp{
     is_running: bool,
     show_settings: bool,
     split_tunneling: bool,
+    which_one: i32          // Check: Is this run first?  
 }
 
 impl Default for MyApp {
@@ -25,7 +70,8 @@ impl Default for MyApp {
         Self { 
             is_running: false,
             show_settings: false,
-            split_tunneling: false
+            split_tunneling: false,
+            which_one: 1,
         }
     }
 }
@@ -80,6 +126,13 @@ impl eframe::App for MyApp{
                         .rounding(60.0);
 
                     if ui.add_sized([120.0, 120.0], button).clicked() {
+                        if self.which_one % 2  == 0 {
+                            run_blind_dpi(self.split_tunneling);
+                        } else {
+                             kill_blind_dpi();
+                        }
+
+                        
                         self.is_running = !self.is_running;
                     }
                     //==============================
